@@ -1,0 +1,25 @@
+import os
+os.chdir('C:\Documents')
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+# Import Lasso
+from sklearn.linear_model import Lasso
+df = pd.read_csv('gm_2008_region.csv')
+X = df.drop(['life','Region'],axis=1).values
+y = df['life'].values
+df_columns = df.drop(['life','Region'],axis=1).columns
+# Instantiate a lasso regressor: lasso
+lasso = Lasso(alpha=0.4,normalize=True)
+# Fit the regressor to the data
+lasso.fit(X,y)
+# Compute and print the coefficients
+lasso_coef = lasso.coef_
+print(lasso_coef)
+# Plot the coefficients
+sns.set()
+plt.plot(range(len(df_columns)), lasso_coef)
+plt.xticks(range(len(df_columns)), df_columns.values, rotation=60)
+plt.margins(0.02)
+plt.show()
