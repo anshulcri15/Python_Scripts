@@ -1,0 +1,92 @@
+import re
+import random
+#Eliza bot rules
+eliza_rules = {'I want (.*)': ['What would it mean if you want {0}', 'Why do you want {0}', "What's stopping you from getting {0}"],
+ 'do you remember (.*)': ['Did you think I would forget {0}', "Why haven't you been able to forget {0}", 'What about {0}', 'Yes .. and?'],
+ 'do you think (.*)': ['if {0}? Absolutely.', 'No chance'],
+ 'if (.*)': ["Do you really think it's likely that {0}", 'Do you wish that {0}', 'What do you think about {0}', 'Really--if {0}']}
+INIT = 0
+CHOOSE_COFFEE = 1
+ORDERED = 2
+#policy Rules
+policy_rules = {(INIT, "ask_explanation"): (INIT, "I'm a bot to help you order coffee beans",None),
+    (INIT, "order"): (CHOOSE_COFFEE, "ok, Columbian or Kenyan?",None),
+    (CHOOSE_COFFEE, "specify_coffee"): (ORDERED, "perfect, the beans are on their way!",None),
+    (CHOOSE_COFFEE, "ask_explanation"): (CHOOSE_COFFEE, "We have two kinds of coffee beans - the Kenyan ones make a slightly sweeter coffee, and cost $6. The Brazilian beans make a nutty coffee and cost $5.",None)}
+#Function to check if message matches with eliza rules
+def match_rule(rules, message):
+    response, phrase = "default", None
+    for pattern, responses in rules.items():
+        match = re.search(pattern,message)
+        if match is not None:
+            response = random.choice(responses)
+            if '{0}' in response:
+                phrase = match.group(1)
+    return response, phrase
+#Function to replace pronouns
+def replace_pronouns(message):
+    message = message.lower()
+    if 'me' in message:
+        return re.sub('me','you',message)
+    if 'my' in message:
+        return re.sub('my','your',message)
+    if 'your' in message:
+        return re.sub('your','my',message)
+    if 'you' in message:
+        return re.sub('you','I',message)
+    return message
+# Define chitchat_response()
+def chitchat_response(message):
+    # Call match_rule()
+    response, phrase = match_rule(eliza_rules,message)
+    # Return none is response is "default"
+    if response == "default":
+        return None
+    if '{0}' in response:
+        # Replace the pronouns of phrase
+        phrase = replace_pronouns(phrase)
+        # Calculate the response
+        response = response.format(phrase)
+    return response
+#Function to find intent of a message for coffee bot	
+keywords = {'order': ['order some coffee', 'order coffee','have some coffee','have coffee'], 'specify_coffee': ['Colombian', 'Kenyan'], 'ask_explanation': ['what']}
+patterns = {}
+for intent, keys in keywords.items():
+    patterns[intent] = re.compile('|'.join(keys),re.IGNORECASE)
+def interpret(message):
+    matched_intent = None
+    for intent, pattern in patterns.items():
+        if pattern.search(message):
+            matched_intent = intent
+    return matched_intent
+# Define send_message()
+def send_message(state,pending,message):
+    print("USER : {}".format(message))
+    response = chitchat_response(message)
+    if response is not None:
+        print("BOT : {}".format(response))
+        return state, None
+    # Calculate the new_state, response, and pending_state
+    new_state, response, pending_state = policy_rules[(state, interpret(message))]
+    print("BOT : {}".format(response))
+    if pending is not None:
+        new_state, response, pending_state = policy_rules[pending]
+        print("BOT : {}".format(response))        
+    if pending_state is not None:
+        pending = (pending_state, interpret(message))
+    return new_state, pending
+# Define send_messages()
+def send_messages(messages):
+    state = INIT
+    pending = None
+    for msg in messages:
+        state, pending = send_message(state, pending, msg)
+# Send the messages
+send_messages(["do you think humans should be worried about AI",
+    "do you remember your last birthday",
+	"what if you could be anything you wanted",
+	"I want a robot friend",
+	"what can you do for me?",
+    "well then I'd like to order some coffee",
+    "what do you mean by that?",
+    "kenyan"])
