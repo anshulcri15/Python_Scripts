@@ -1,0 +1,20 @@
+import os
+os.chdir('C:\Documents\AI & ML\Datacamp')
+import matplotlib.pyplot as plt
+import pandas as pd
+df = pd.read_csv('stocks.csv',index_col='Date')
+df.index = pd.to_datetime(df.index)
+aapl=df['AAPL']
+# Slice aapl from Nov. 2007 to Apr. 2008 inclusive: view
+view = aapl['2007-11':'2008-04']
+# Plot the entire series 
+plt.plot(aapl)
+plt.xticks(rotation=45)
+plt.title('AAPL: 2001-2011')
+# Specify the axes
+plt.axes([0.25,0.5,0.30,0.30])  #position coordinates(x,y) and height and width
+# Plot the sliced series in red using the current axes
+plt.plot(view,color='red')
+plt.xticks(rotation=45)
+plt.title('2007/11-2008/04')
+plt.show()
