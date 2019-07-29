@@ -1,0 +1,17 @@
+import os
+os.chdir('C:\Documents\stock_data')      
+import matplotlib.pyplot as plt
+import pandas as pd
+monthly = pd.read_csv('unrate.csv',index_col='DATE',parse_dates=True)
+# Inspect data here
+print(monthly.info())
+# Create weekly dates
+weekly_dates = pd.date_range(monthly.index.min(), monthly.index.max(),freq='W')
+# Reindex monthly to weekly data
+weekly = monthly.reindex(weekly_dates)
+# Create ffill and interpolated columns
+weekly['ffill'] = weekly.UNRATE.ffill()
+weekly['interpolated'] = weekly.UNRATE.interpolate()
+# Plot weekly
+weekly.plot()
+plt.show()
