@@ -1,0 +1,14 @@
+import os
+os.chdir('C:\Documents')
+import seaborn as sns
+import matplotlib.pyplot as plt
+import pandas as pd
+meat = pd.read_csv('meat.csv',index_col=0,parse_dates=True)
+# Get correlation matrix of the meat DataFrame
+corr_meat = meat.corr(method='spearman')
+sns.set()
+# Customize the heatmap of the corr_meat correlation matrix
+sns.heatmap(corr_meat, annot=True, linewidths=0.4, annot_kws={"size": 10})
+plt.xticks(rotation=90)
+plt.yticks(rotation=0) 
+plt.show()
