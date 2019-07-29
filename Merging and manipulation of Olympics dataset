@@ -1,0 +1,36 @@
+import os
+import pandas as pd
+import matplotlib.pyplot as plt
+os.chdir('C:\Documents\Summer Olympic medals')
+medals = pd.read_csv('Summer Olympic medalists 1896 to 2008 - ALL MEDALISTS.tsv',sep='\t')
+medals = medals[['Athlete','NOC','Medal','Edition']]
+medal_counts = medals.pivot_table(index='Edition',aggfunc='count',values='Athlete',columns='NOC')
+editions = pd.read_csv('Summer Olympic medalists 1896 to 2008 - EDITIONS.tsv',sep='\t')
+editions = editions[['Edition','Grand Total','City','Country']]
+totals = editions.set_index('Edition')
+totals = totals['Grand Total']
+fractions = medal_counts.divide(totals,axis='rows')
+mean_fractions = fractions.expanding().mean()
+fractions_change = mean_fractions.pct_change()*100
+fractions_change = fractions_change.reset_index()
+reshaped = pd.melt(fractions_change,id_vars='Edition',value_name='Change')
+ioc_codes = pd.read_csv('Summer Olympic medalists 1896 to 2008 - IOC COUNTRY CODES.csv')
+ioc_codes = ioc_codes[['Country','NOC']]
+hosts = pd.merge(editions,ioc_codes,how='left')
+hosts = hosts[['Edition','NOC']].set_index('Edition')
+#print(hosts.loc[hosts.NOC.isnull()])
+hosts.loc[1972, 'NOC'] = 'FRG'
+hosts.loc[1980, 'NOC'] = 'URS'
+hosts.loc[1988, 'NOC'] = 'KOR'
+hosts = hosts.reset_index()
+merged = pd.merge(reshaped,hosts)
+influence = merged.set_index('Edition').sort_index()
+# Extract influence['Change']: change
+change = influence['Change']
+# Make bar plot of change: ax
+ax = change.plot(kind='bar')
+# Customize the plot to improve readability
+ax.set_ylabel("% Change of Host Country Medal Count")
+ax.set_title("Is there a Host Country Advantage?")
+ax.set_xticklabels(editions['City'])
+plt.show()
