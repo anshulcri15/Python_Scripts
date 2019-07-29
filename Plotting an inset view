@@ -1,5 +1,5 @@
 import os
-os.chdir('C:\Documents\AI & ML\Datacamp')
+os.chdir('C:\Documents')
 import matplotlib.pyplot as plt
 import pandas as pd
 df = pd.read_csv('stocks.csv',index_col='Date')
