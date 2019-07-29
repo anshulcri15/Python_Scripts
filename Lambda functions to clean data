@@ -1,0 +1,10 @@
+import os
+os.chdir('C:\Documents')
+import pandas as pd
+import re
+df = pd.read_csv('Dollar.csv')
+# Write the lambda function using replace
+df['Initial_cost_replace'] = df['Initial Cost'].apply(lambda x: x.replace('$', ''))
+# Write the lambda function using regular expressions
+df['Initial_cost_re'] = df['Initial Cost'].apply(lambda x: re.findall('\d+\.\d+', x)[0])
+print(df.head())
