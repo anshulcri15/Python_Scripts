@@ -1,0 +1,25 @@
+import os
+os.chdir('C:\Documents')
+import matplotlib.pyplot as plt
+# Load the image into an array: image
+image = plt.imread('Helix-nebula.jpg')
+# Display image in top subplot
+plt.subplot(2,1,1)
+plt.title('Original image')
+plt.axis('off')
+plt.imshow(image)
+# Extract 2-D arrays of the RGB channels: red, blue, green
+red, green, blue = image[:,:,0], image[:,:,1], image[:,:,2]
+# Flatten the 2-D arrays of the RGB channels into 1-D
+red_pixels = red.flatten()
+blue_pixels = green.flatten()
+green_pixels = blue.flatten()
+# Overlay histograms of the pixels of each color in the bottom subplot
+plt.subplot(2,1,2)
+plt.title('Histograms from color image')
+plt.xlim((0,256))
+plt.hist(red_pixels, bins=64, density=True, color='red', alpha=0.2,ec='black')
+plt.hist(blue_pixels, bins=64, density=True, color='blue', alpha=0.2,ec='black')
+plt.hist(green_pixels, bins=64, density=True, color='green', alpha=0.2,ec='black')
+# Display the plot
+plt.show()
