@@ -1,0 +1,13 @@
+import os
+os.chdir('C:\Documents\stock_data')
+import matplotlib.pyplot as plt
+import pandas as pd
+google = pd.read_csv('google.csv',index_col='Date',parse_dates=True)
+# Set data frequency to business daily
+google = google.asfreq('B')                                     
+# Create 'lagged' and 'shifted'
+google['lagged'] = google['Close'].shift(-90)
+google['shifted'] = google.Close.shift(90)
+# Plot the google price series
+google.plot()
+plt.show()
