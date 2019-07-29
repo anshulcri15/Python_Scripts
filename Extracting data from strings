@@ -1,0 +1,26 @@
+'''Extracting only those values from length_of_time which are in minutes and then extracting only numerical value from those minutes.'''
+import os
+os.chdir('C:\Documents\')
+import re
+import pandas as pd
+df = pd.read_csv('ufo_sightings_large.csv')
+# Keep only rows where length_of_time, state, and type are not null
+df1 = df[df['length_of_time'].notnull() & df['state'].notnull() & df['type'].notnull()]
+def only_minutes(time_string):
+    pattern = re.compile(r"min")    
+    time = re.search(pattern, time_string)
+    if time is not None:
+        return time_string
+df1["time_mins"] = df1["length_of_time"].apply(only_minutes)
+ufo = df1[df1['time_mins'].notnull()].drop('time_mins',axis=1)
+def return_minutes(time_string):
+    # Use \d+ to grab digits
+    pattern = re.compile(r"\d+")    
+    # Use match on the pattern and column
+    num = re.match(pattern, time_string)
+    if num is not None:
+        return int(num.group(0))        
+# Apply the extraction to the length_of_time column
+ufo["minutes"] = ufo["length_of_time"].apply(return_minutes)
+# Take a look at the head of both of the columns
+print(ufo)
