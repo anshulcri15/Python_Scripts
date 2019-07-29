@@ -1,0 +1,25 @@
+import os
+os.chdir('C:\Documents')
+import pandas as pd
+import matplotlib.pyplot as plt
+g1800s = pd.read_csv('gapminder2.csv')
+g1800s.drop(g1800s.columns[0],axis=1,inplace=True)
+g1800s.drop([str(i) for i in range(1900,2017)],axis=1,inplace=True)
+list = ['Life expectancy']
+for c in range(1800,1900):
+    col = str(c)
+    list.append(col)
+g1800s = g1800s.reindex(columns=list)
+g1800s.drop([r for r in range(260,780)],inplace=True)
+"""Function that takes a row of data, drops all missing values, and checks if all remaining values are greater than or equal to 0 """
+def check_null_or_valid(row_data):
+    no_na = row_data.dropna()[1:-1]
+    numeric = pd.to_numeric(no_na)
+    ge0 = numeric >= 0
+    return ge0
+# Check whether the first column is 'Life expectancy'
+assert g1800s.columns[0] == 'Life expectancy'
+# Check whether the values in the row are valid
+assert g1800s.iloc[:, 1:].apply(check_null_or_valid, axis=1).all().all()
+# Check that there is only one instance of each country
+assert g1800s['Life expectancy'].value_counts()[0] == 1
