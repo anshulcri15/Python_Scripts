@@ -1,0 +1,22 @@
+import os                                                                                                 
+os.chdir('C:\Documents')
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+df = pd.read_csv('female_literacy_fertility.csv')
+illiteracy = 100-df['female literacy'].values
+fertility = df['fertility']
+# Plot the illiteracy rate versus fertility
+_ = plt.plot(illiteracy, fertility, marker='.', linestyle='none')
+# Set the margins and label axes
+plt.margins(.02)
+_ = plt.xlabel('percent illiterate')
+_ = plt.ylabel('fertility')
+plt.show()
+def pearson_r(x, y):
+    """Compute Pearson correlation coefficient between two arrays."""
+    # Compute correlation matrix: corr_mat
+    corr_mat = np.corrcoef(x, y)
+    return corr_mat[0,1]
+# Show the Pearson correlation coefficient
+print(pearson_r(illiteracy, fertility))
