@@ -1,0 +1,18 @@
+import os
+os.chdir('C:\Documents\\air_quality_data')
+import matplotlib.pyplot as plt
+import pandas as pd
+co = pd.read_csv('co_cities.csv',index_col='date')
+co.index = pd.to_datetime(co.index)
+# Inspect data
+print(co.info())                                                         
+# Set the frequency to calendar daily
+co = co.asfreq('D')
+# Plot the data
+co.plot(subplots=True)
+plt.show()
+# Set frequency to monthly
+co = co.asfreq('M')
+# Plot the data
+co.plot(subplots=True)                                                      
+plt.show()
