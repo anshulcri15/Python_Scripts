@@ -1,0 +1,18 @@
+import os
+os.chdir('C:\Documents\\air_quality_data')
+import matplotlib.pyplot as plt                                    
+import pandas as pd
+ozone = pd.read_csv('ozone_nyla.csv', parse_dates=True,index_col='date' )                      
+print(ozone.info())
+# Calculate and plot the weekly average ozone trend
+ozone.resample('W').mean().plot()
+plt.title('Weekly')
+plt.show()
+# Calculate and plot the monthly average ozone trend
+ozone.resample('M').mean().plot()
+plt.title('Monthly')
+plt.show()
+# Calculate and plot the annual average ozone trend
+ozone.resample('A').mean().plot()
+plt.title('Annually')
+plt.show()
