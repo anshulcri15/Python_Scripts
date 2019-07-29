@@ -1,0 +1,44 @@
+import os
+os.chdir(‘C:\Documents\Wikipedia articles')
+from nltk.tokenize import word_tokenize
+from nltk.stem import WordNetLemmatizer
+from nltk.corpus import stopwords
+from gensim.corpora.dictionary import Dictionary
+from collections import defaultdict
+import itertools
+wiki=["wiki_text_debugging.txt","wiki_text_language.txt","wiki_text_software.txt","wiki_text_reversing.txt","wiki_text_computer.txt"]
+articles = []
+def preprocess(text):
+    with open(text,"r",encoding="utf8") as f:
+        mag = f.read()
+    tokens = word_tokenize(mag)
+    lower_tokens = [t.lower() for t in tokens]
+    alpha_only = [t for t in lower_tokens if t.isalpha()]
+    no_stops = [t for t in alpha_only if t not in stopwords.words('english')]
+    wordnet_lemmatizer = WordNetLemmatizer()
+    lemmatized = [wordnet_lemmatizer.lemmatize(t) for t in no_stops]
+    return lemmatized
+for a in wiki:
+    ar = preprocess(a)
+    articles.append(ar)
+dictionary = Dictionary(articles)
+# Create a MmCorpus: corpus
+corpus = [dictionary.doc2bow(article) for article in articles]
+# Save the fourth document: doc
+doc = corpus[3]
+# Sort the doc for frequency: bow_doc
+bow_doc = sorted(doc, key=lambda w: w[1], reverse=True)
+# Print the top 5 words of the document alongside the count
+print("Top five words in article:",wiki[3])
+for word_id, word_count in bow_doc[:5]:
+    print(dictionary.get(word_id), word_count)
+# Create the defaultdict: total_word_count
+total_word_count = defaultdict(int)
+for word_id, word_count in itertools.chain.from_iterable(corpus):
+    total_word_count[word_id] += word_count
+# Create a sorted list from the defaultdict: sorted_word_count
+sorted_word_count = sorted(total_word_count.items(), key=lambda w: w[1], reverse=True) 
+# Print the top 5 words across all documents alongside the count
+print("Top five words across all articles")
+for word_id, word_count in sorted_word_count[:5]:
+    print(dictionary.get(word_id), word_count)
